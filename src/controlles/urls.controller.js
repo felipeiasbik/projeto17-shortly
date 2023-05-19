@@ -38,10 +38,8 @@ export async function getShortUrlId(req, res){
         const urlShortId = await db.query(`SELECT * FROM "urlShorten" WHERE id=$1;`, [id]);
         if (urlShortId.rows.length === 0) return res.status(404).send("Não existe uma URL com este ID");
 
-        const urlLongId = await db.query(`SELECT * FROM url WHERE id=$1;`,[urlShortId.rows[0].urlId]);
-
         const sendUrlId = await db.query(`
-        SELECT "urlShorten".id, "urlShorten"."urlShorten" AS "shortURL", url.url 
+        SELECT "urlShorten".id, "urlShorten"."urlShorten" AS "shortUrl", url.url 
         FROM "urlShorten"
         JOIN url ON url.id = $1
         WHERE "urlShorten".id = $2;`,
