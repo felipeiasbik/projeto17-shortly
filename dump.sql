@@ -27,7 +27,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.session (
     id integer NOT NULL,
     "userId" integer NOT NULL,
-    token text
+    token text,
+    "createdAt" timestamp with time zone DEFAULT now()
 );
 
 
@@ -58,7 +59,8 @@ ALTER SEQUENCE public.session_id_seq OWNED BY public.session.id;
 CREATE TABLE public.url (
     id integer NOT NULL,
     userid integer NOT NULL,
-    url text
+    url text,
+    "createdAt" timestamp with time zone DEFAULT now()
 );
 
 
@@ -69,7 +71,8 @@ CREATE TABLE public.url (
 CREATE TABLE public."urlClicks" (
     id integer NOT NULL,
     "urlShortenId" integer NOT NULL,
-    "visitCount" integer
+    "visitCount" integer,
+    "createdAt" timestamp with time zone DEFAULT now()
 );
 
 
@@ -153,7 +156,8 @@ CREATE TABLE public.users (
     id integer NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
-    password text NOT NULL
+    password text NOT NULL,
+    "createdAt" timestamp with time zone DEFAULT now()
 );
 
 
@@ -216,11 +220,11 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.session VALUES (1, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTQ5Nn0.NznQn0F7oFl4FUHWwi5AkuT7e6buUs79AAh9OtrNN3o');
-INSERT INTO public.session VALUES (2, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTg1MH0.2qDR-ddFGuPDULtRzFKGkuArJaipUs0aIEHQFLQkrdA');
-INSERT INTO public.session VALUES (3, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTkzM30.KzYfgJaJ9klQc8zTVI_VNzITgja3jTq_i1mFS38DXSg');
-INSERT INTO public.session VALUES (4, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTk0OX0.jrBN7S7R8eCEEndo6okDdicuVI4BHI53BfPAXbls-3g');
-INSERT INTO public.session VALUES (5, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NjAxMX0.nGJsgc0riefb9-9vyYtnTWmsDSGKVNUNeoV9rtHEwSQ');
+INSERT INTO public.session VALUES (1, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTQ5Nn0.NznQn0F7oFl4FUHWwi5AkuT7e6buUs79AAh9OtrNN3o', '2023-05-19 10:17:46.202439-03');
+INSERT INTO public.session VALUES (2, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTg1MH0.2qDR-ddFGuPDULtRzFKGkuArJaipUs0aIEHQFLQkrdA', '2023-05-19 10:17:46.202439-03');
+INSERT INTO public.session VALUES (3, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTkzM30.KzYfgJaJ9klQc8zTVI_VNzITgja3jTq_i1mFS38DXSg', '2023-05-19 10:17:46.202439-03');
+INSERT INTO public.session VALUES (4, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTk0OX0.jrBN7S7R8eCEEndo6okDdicuVI4BHI53BfPAXbls-3g', '2023-05-19 10:17:46.202439-03');
+INSERT INTO public.session VALUES (5, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NjAxMX0.nGJsgc0riefb9-9vyYtnTWmsDSGKVNUNeoV9rtHEwSQ', '2023-05-19 10:17:46.202439-03');
 
 
 --
@@ -245,9 +249,9 @@ INSERT INTO public.session VALUES (5, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.users VALUES (1, 'João', 'joao@driven.com.br', 'driven');
-INSERT INTO public.users VALUES (2, 'Felipe', 'felipe@felipe.com', 'felipe');
-INSERT INTO public.users VALUES (5, 'Jana', 'jana@jana.com', '$2b$10$WD41SJMGxT5uHolumvsXqOb7dhTeHmJ0A5YEz.2bpcuQBLq4kv5Py');
+INSERT INTO public.users VALUES (1, 'João', 'joao@driven.com.br', 'driven', '2023-05-19 10:14:30.87267-03');
+INSERT INTO public.users VALUES (2, 'Felipe', 'felipe@felipe.com', 'felipe', '2023-05-19 10:14:30.87267-03');
+INSERT INTO public.users VALUES (5, 'Jana', 'jana@jana.com', '$2b$10$WD41SJMGxT5uHolumvsXqOb7dhTeHmJ0A5YEz.2bpcuQBLq4kv5Py', '2023-05-19 10:14:30.87267-03');
 
 
 --
