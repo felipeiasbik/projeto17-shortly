@@ -25,7 +25,7 @@ export async function createShortUrl(req, res){
         VALUES ($1, $2);`,
         [urlNow.rows[0].id, urlshort]);
 
-        res.send({"id": urlNow.rows[0].id, "shortUrl": urlshort});
+        res.status(201).send({"id": urlNow.rows[0].id, "shortUrl": urlshort});
 
     } catch (err) {
         res.status(500).send(err.message);
