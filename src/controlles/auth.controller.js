@@ -1,4 +1,4 @@
-import { db } from "../database/database.connection.js"
+import { db } from "../database/database.connection.js";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 
@@ -56,7 +56,6 @@ export async function logout(req, res) {
 
     try {
         const sessionActive = await db.query(`SELECT * FROM session WHERE token=$1;`, [token]);
-        
         if (sessionActive.rows.length === 0) return res.sendStatus(401);
 
         await db.query(`DELETE FROM session WHERE token=$1;`, [token]);
