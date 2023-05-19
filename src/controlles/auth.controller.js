@@ -34,7 +34,7 @@ export async function signIn(req, res) {
 
         if (user && checkPass){
             const payload = { idUser: user.rows[0].id };
-            const token = Jwt.sign(payload, process.env.JWT_SECRET);
+            const token = Jwt.sign(payload, process.env.JWT_SECRET || "super_secret_key");
 
             await db.query(`
             INSERT INTO session ("userId", token)
@@ -50,5 +50,18 @@ export async function signIn(req, res) {
 }
 
 export async function logout(req, res) {
+    const { authorization } = req.headers;
+	const token = authorization?.replace('Bearer ', '');
+    if(!token) return res.sendStatus(401);
 
+    try {
+        const sessionActive = await db.query(`SELECT * FROM session WHERE token=$1;`, [token]);
+        
+        if (sessionActive.rows.length === 0) return res.sendStatus(401);
+
+        await db.query(`DELETE FROM session WHERE token=$1;`, [token]);
+        res.send("Usuário deslogado com sucesso!")
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 }

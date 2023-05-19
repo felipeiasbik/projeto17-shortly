@@ -58,7 +58,7 @@ ALTER SEQUENCE public.session_id_seq OWNED BY public.session.id;
 
 CREATE TABLE public.url (
     id integer NOT NULL,
-    userid integer NOT NULL,
+    "userId" integer NOT NULL,
     url text,
     "createdAt" timestamp with time zone DEFAULT now()
 );
@@ -220,11 +220,6 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.session VALUES (1, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTQ5Nn0.NznQn0F7oFl4FUHWwi5AkuT7e6buUs79AAh9OtrNN3o', '2023-05-19 10:17:46.202439-03');
-INSERT INTO public.session VALUES (2, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTg1MH0.2qDR-ddFGuPDULtRzFKGkuArJaipUs0aIEHQFLQkrdA', '2023-05-19 10:17:46.202439-03');
-INSERT INTO public.session VALUES (3, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTkzM30.KzYfgJaJ9klQc8zTVI_VNzITgja3jTq_i1mFS38DXSg', '2023-05-19 10:17:46.202439-03');
-INSERT INTO public.session VALUES (4, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NTk0OX0.jrBN7S7R8eCEEndo6okDdicuVI4BHI53BfPAXbls-3g', '2023-05-19 10:17:46.202439-03');
-INSERT INTO public.session VALUES (5, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOjUsImlhdCI6MTY4NDQ0NjAxMX0.nGJsgc0riefb9-9vyYtnTWmsDSGKVNUNeoV9rtHEwSQ', '2023-05-19 10:17:46.202439-03');
 
 
 --
@@ -249,16 +244,14 @@ INSERT INTO public.session VALUES (5, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.users VALUES (1, 'João', 'joao@driven.com.br', 'driven', '2023-05-19 10:14:30.87267-03');
-INSERT INTO public.users VALUES (2, 'Felipe', 'felipe@felipe.com', 'felipe', '2023-05-19 10:14:30.87267-03');
-INSERT INTO public.users VALUES (5, 'Jana', 'jana@jana.com', '$2b$10$WD41SJMGxT5uHolumvsXqOb7dhTeHmJ0A5YEz.2bpcuQBLq4kv5Py', '2023-05-19 10:14:30.87267-03');
+INSERT INTO public.users VALUES (1, 'felipe', 'felipe@felipe.com', '$2b$10$kYQHxp5GVcchhkR3McyQTeTjNPXvEKc.jtCr3hpgfoQXfpocjNf5S', '2023-05-19 12:36:21.978522-03');
 
 
 --
 -- Name: session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_id_seq', 5, true);
+SELECT pg_catalog.setval('public.session_id_seq', 2, true);
 
 
 --
@@ -286,7 +279,7 @@ SELECT pg_catalog.setval('public.url_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 5, true);
+SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --
@@ -338,11 +331,35 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: session session_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_fk0 FOREIGN KEY ("userId") REFERENCES public.users(id);
+
+
+--
+-- Name: urlClicks urlClicks_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."urlClicks"
+    ADD CONSTRAINT "urlClicks_fk0" FOREIGN KEY ("urlShortenId") REFERENCES public."urlShorten"(id);
+
+
+--
 -- Name: urlClicks urlClicks_urlShortenId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."urlClicks"
     ADD CONSTRAINT "urlClicks_urlShortenId_fkey" FOREIGN KEY ("urlShortenId") REFERENCES public."urlShorten"(id);
+
+
+--
+-- Name: urlShorten urlShorten_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."urlShorten"
+    ADD CONSTRAINT "urlShorten_fk0" FOREIGN KEY ("urlId") REFERENCES public.url(id);
 
 
 --
@@ -354,11 +371,19 @@ ALTER TABLE ONLY public."urlShorten"
 
 
 --
--- Name: url url_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: url url_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.url
-    ADD CONSTRAINT url_userid_fkey FOREIGN KEY (userid) REFERENCES public.users(id);
+    ADD CONSTRAINT url_fk0 FOREIGN KEY ("userId") REFERENCES public.users(id);
+
+
+--
+-- Name: url url_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url
+    ADD CONSTRAINT "url_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
 
 
 --
