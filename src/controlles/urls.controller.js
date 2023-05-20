@@ -57,8 +57,10 @@ export async function getShortUrl(req, res){
         const longUrl = await db.query(`
         SELECT url.url FROM url
         JOIN "urlShorten" ON "urlShorten"."urlId" = url.id
-        WHERE "urlShorten" = $1;`,
+        WHERE "urlShorten"."urlShorten" = $1;`,
         [shortUrl]);
+
+        console.log(longUrl.rows[0].url)
 
         const urlShortExist = await db.query(`
         SELECT * FROM "urlShorten" 
