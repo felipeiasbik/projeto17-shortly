@@ -78,5 +78,33 @@ export async function getShortUrl(req, res){
 }
 
 export async function deleteUrlId(req, res){
+    const { id } = req.params;
+    const { authorization } = req.headers;
+    const token = authorization?.replace('Bearer ', '');
+    if(!token) return res.sendStatus(401);
 
+    try{
+        const user = await db.query(`
+        SELECT users.id FROM users 
+        JOIN session ON session."userId" = users.id
+        WHERE session.token = $1;`,
+        [token]);
+
+        const userIdUrlShorten = await db.query(`
+        SELECT * FROM url
+        JOIN "urlShorten" ON "urlShorten"."urlId" = url.id
+        WHERE "urlShorten".id = $1;`,
+        [id]);
+
+        if (userIdUrlShorten.rowCount === 0) return res.status(404).send("Url não existe");
+
+        if(user.rows[0].id !== userIdUrlShorten.rows[0].userId) 
+        return res.status(401).send("Url não pertence ao usuário");
+
+        await db.query(`DELETE FROM "urlShorten" WHERE id=$1;`, [id]);
+        res.status(204).send("Url removida com sucesso!");
+
+    } catch(err) {
+        res.status(500).send(err.message);
+    }
 }
