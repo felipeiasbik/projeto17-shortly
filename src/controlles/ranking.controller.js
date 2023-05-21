@@ -4,18 +4,18 @@ export async function getRanking(req, res){
     try {
         const ranking = await db.query(`
         SELECT
-            users.id,
-            users.name,
-            CAST(COUNT(DISTINCT "urlShorten".id) AS INTEGER) AS "linksCount",
-            COALESCE(SUM("urlClicks"."visitCount"),0)::INTEGER AS "visitCount"
+            u.id,
+            u.name,
+            CAST(COUNT(DISTINCT us.id) AS INTEGER) AS "linksCount",
+            COALESCE(SUM(uc."visitCount"),0)::INTEGER AS "visitCount"
         FROM
-            users
-            LEFT JOIN session ON users.id = session."userId"
-            LEFT JOIN url ON users.id = url."userId"
-            LEFT JOIN "urlShorten" ON url.id = "urlShorten"."urlId"
-            LEFT JOIN "urlClicks" ON "urlShorten".id = "urlClicks"."urlShortenId"
+            users u
+            LEFT JOIN session s ON u.id = s."userId"
+            LEFT JOIN url ur ON u.id = ur."userId"
+            LEFT JOIN "urlShorten" us ON ur.id = us."urlId"
+            LEFT JOIN "urlClicks" uc ON us.id = uc."urlShortenId"
         GROUP BY
-            users.id
+            u.id
         ORDER BY
             "visitCount" DESC
         LIMIT 10;`);
