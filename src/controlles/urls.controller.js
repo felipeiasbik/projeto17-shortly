@@ -1,5 +1,5 @@
-import { db } from "../database/database.connection.js";
 import { nanoid } from "nanoid";
+import { createShortURLInsert2DB, createShortURLInsertDB, createShortURLTokenDB, createShortUrlUserDB, deleteUrlIdDeleteDB, deleteUrlIdUserDB, deleteUrlIdUserIdDB, getShortURLIDResDB, getShortURLIDSelectDB, getShortUrlClicksDB, getShortUrlLongDB, getShortUrlShortDB } from "../repositories/urls.repository.js";
 
 export async function createShortUrl(req, res){
     const { url } = req.body;
@@ -8,22 +8,15 @@ export async function createShortUrl(req, res){
     if(!token) return res.sendStatus(401);
 
     try {
-        const sessionActive = await db.query(`SELECT * FROM session WHERE token=$1;`, [token]);
+        const sessionActive = await createShortURLTokenDB(token);
         if (sessionActive.rows.length === 0) return res.sendStatus(401);
 
-        const user = await db.query(`SELECT * FROM session WHERE token=$1`, [token]);
-        const urlNow = await db.query(`INSERT INTO url ("userId", url)
-        VALUES ($1, $2)
-        RETURNING id;`,
-        [user.rows[0].userId ,url]
-        );
+        const user = await createShortUrlUserDB(token);
+        const urlNow = await createShortURLInsertDB(user, url);
 
         const urlshort = nanoid(8);
 
-        await db.query(`
-        INSERT INTO "urlShorten" ("urlId", "urlShorten")
-        VALUES ($1, $2);`,
-        [urlNow.rows[0].id, urlshort]);
+        await createShortURLInsert2DB(urlNow, urlshort);
 
         res.status(201).send({"id": urlNow.rows[0].id, "shortUrl": urlshort});
 
@@ -35,15 +28,10 @@ export async function createShortUrl(req, res){
 export async function getShortUrlId(req, res){
     const { id } = req.params;
     try {
-        const urlShortId = await db.query(`SELECT * FROM "urlShorten" WHERE id=$1;`, [id]);
+        const urlShortId = await getShortURLIDSelectDB(id);
         if (urlShortId.rows.length === 0) return res.status(404).send("Não existe uma URL com este ID");
 
-        const sendUrlId = await db.query(`
-        SELECT "urlShorten".id, "urlShorten"."urlShorten" AS "shortUrl", url.url 
-        FROM "urlShorten"
-        JOIN url ON url.id = $1
-        WHERE "urlShorten".id = $2;`,
-        [urlShortId.rows[0].urlId, id]);
+        const sendUrlId = await getShortURLIDResDB(urlShortId, id);
 
         res.send(sendUrlId.rows[0]);
     } catch (err) {
@@ -54,24 +42,14 @@ export async function getShortUrlId(req, res){
 export async function getShortUrl(req, res){
     const { shortUrl } = req.params;
     try {
-        const longUrl = await db.query(`
-        SELECT url.url FROM url
-        JOIN "urlShorten" ON "urlShorten"."urlId" = url.id
-        WHERE "urlShorten"."urlShorten" = $1;`,
-        [shortUrl]);
+        const longUrl = await getShortUrlLongDB(shortUrl);
 
         console.log(longUrl.rows[0].url)
 
-        const urlShortExist = await db.query(`
-        SELECT * FROM "urlShorten" 
-        WHERE "urlShorten"."urlShorten" = $1;`,
-        [shortUrl]);
+        const urlShortExist = await getShortUrlShortDB(shortUrl);
         if (urlShortExist.rowCount === 0) return res.status(404).send("Este endereço não existe!")
 
-        await db.query(`
-        INSERT INTO "urlClicks" ("urlShortenId", "visitCount")
-        VALUES ($1, $2);`,
-        [urlShortExist.rows[0].id, 1]);
+        await getShortUrlClicksDB(urlShortExist);
 
         res.redirect(longUrl.rows[0].url);
     } catch (err) {
@@ -86,24 +64,16 @@ export async function deleteUrlId(req, res){
     if(!token) return res.sendStatus(401);
 
     try{
-        const user = await db.query(`
-        SELECT users.id FROM users 
-        JOIN session ON session."userId" = users.id
-        WHERE session.token = $1;`,
-        [token]);
+        const user = await deleteUrlIdUserDB(token);
 
-        const userIdUrlShorten = await db.query(`
-        SELECT * FROM url
-        JOIN "urlShorten" ON "urlShorten"."urlId" = url.id
-        WHERE "urlShorten".id = $1;`,
-        [id]);
+        const userIdUrlShorten = await deleteUrlIdUserIdDB(id);
 
         if (userIdUrlShorten.rowCount === 0) return res.status(404).send("Url não existe");
 
         if(user.rows[0].id !== userIdUrlShorten.rows[0].userId) 
         return res.status(401).send("Url não pertence ao usuário");
 
-        await db.query(`DELETE FROM "urlShorten" WHERE id=$1;`, [id]);
+        await deleteUrlIdDeleteDB(id);
         res.status(204).send("Url removida com sucesso!");
 
     } catch(err) {

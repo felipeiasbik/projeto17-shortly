@@ -41,3 +41,51 @@ export function getShortURLIDResDB(urlShortId, id){
     [urlShortId.rows[0].urlId, id]);
     return result;
 }
+
+export function getShortUrlLongDB(shortUrl){
+    const result = db.query(`
+    SELECT url.url FROM url
+    JOIN "urlShorten" ON "urlShorten"."urlId" = url.id
+    WHERE "urlShorten"."urlShorten" = $1;`,
+    [shortUrl]);
+    return result;
+}
+
+export function getShortUrlShortDB(shortUrl){
+    const result = db.query(`
+    SELECT * FROM "urlShorten" 
+    WHERE "urlShorten"."urlShorten" = $1;`,
+    [shortUrl]);
+    return result;
+}
+
+export function getShortUrlClicksDB(urlShortExist){
+    const result = db.query(`
+    INSERT INTO "urlClicks" ("urlShortenId", "visitCount")
+    VALUES ($1, $2);`,
+    [urlShortExist.rows[0].id, 1]);
+    return result;
+}
+
+export function deleteUrlIdUserDB(token){
+    const result = db.query(`
+    SELECT users.id FROM users 
+    JOIN session ON session."userId" = users.id
+    WHERE session.token = $1;`,
+    [token]);
+    return result;
+}
+
+export function deleteUrlIdUserIdDB(id){
+    const result = db.query(`
+    SELECT * FROM url
+    JOIN "urlShorten" ON "urlShorten"."urlId" = url.id
+    WHERE "urlShorten".id = $1;`,
+    [id]);
+    return result;
+}
+
+export function deleteUrlIdDeleteDB(id){
+    const result = db.query(`DELETE FROM "urlShorten" WHERE id=$1;`, [id]);
+    return result;
+}
