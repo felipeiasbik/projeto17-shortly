@@ -22,7 +22,7 @@ export async function getUser(req, res){
 
         const second = await getUserSecondDB(id);
         
-        const result = first.rowCount === 0 ?{...firstWithNotVisit, shortenedUrls: [first3.rows[0]]} : {...first.rows[0], shortenedUrls: second.rows};
+        const result = first.rowCount === 0 ?{...firstWithNotVisit, shortenedUrls: [{...first3.rows[0], "visitCount": 0}]} : {...first.rows[0], shortenedUrls: second.rows};
         res.send(result);        
     } catch(err) {
         res.status(500).send(err.message);
