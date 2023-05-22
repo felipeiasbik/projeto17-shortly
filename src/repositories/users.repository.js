@@ -37,6 +37,22 @@ export function getUserFirst2DB(id){
     return result;
 }
 
+export function getUserFirst3DB(id){
+    const result = db.query(`
+    SELECT
+        us.id,
+        us."urlShorten",
+        ur.url
+    FROM users u
+    JOIN url ur ON u.id = ur."userId"
+    JOIN "urlShorten" us ON ur.id = us."urlId"
+    WHERE u.id = $1
+    GROUP BY us.id, ur."url";
+    `, [id.rows[0].userId]);
+    
+    return result;
+}
+
 export function getUserSecondDB(id){
     const result = db.query(`
     SELECT 
