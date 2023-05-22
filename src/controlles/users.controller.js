@@ -18,7 +18,7 @@ export async function getUser(req, res){
 
         const second = await getUserSecondDB(id);
         
-        const result = first.rowCount === 0 ?{...first3, shortenedUrls: [id = null]} : {...first.rows[0], shortenedUrls: second.rows};
+        const result = first.rowCount === 0 ?{...first3, shortenedUrls: [{id: null}]} : {...first.rows[0], shortenedUrls: second.rows};
         res.send(result);        
     } catch(err) {
         res.status(500).send(err.message);
