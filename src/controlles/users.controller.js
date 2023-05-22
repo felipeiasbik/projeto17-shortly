@@ -7,6 +7,7 @@ export async function getUser(req, res){
     if(!token) return res.sendStatus(401);
     try {
         const id = await getUserIdDB(token);
+        if(id.rows[0] === undefined) return res.send(401);
         
         let first = await getUserFirstDB(id);
         
@@ -17,7 +18,6 @@ export async function getUser(req, res){
         }
 
         const first3 = await getUserFirst3DB(id);
-        console.log(first3.rowCount)
         if (first3.rowCount === 0) first3.rows[0] = {id: 0}
 
         const second = await getUserSecondDB(id);
