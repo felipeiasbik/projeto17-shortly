@@ -57,7 +57,7 @@ export function getUserSecondDB(id){
     const result = db.query(`
     SELECT 
         us.id, 
-        us."urlShorten", 
+        us."urlShorten" AS "shortUrl", 
         ur.url, 
         COALESCE(SUM(uc."visitCount"),0)::INTEGER AS "visitCount"   
     FROM users u
