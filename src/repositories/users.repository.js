@@ -41,7 +41,7 @@ export function getUserFirst3DB(id){
     const result = db.query(`
     SELECT
         us.id,
-        us."urlShorten",
+        us."urlShorten" AS "shortUrl",
         ur.url
     FROM users u
     JOIN url ur ON u.id = ur."userId"
