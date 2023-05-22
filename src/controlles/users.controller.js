@@ -13,7 +13,7 @@ export async function getUser(req, res){
         
         const second = await getUserSecondDB(id);
         
-        const result = second.rowCount === 0 ? "Este usuário não recebeu cliques nas suas URLs" : {...first.rows[0], shortenedUrls: second.rows}
+        const result = {...first.rows[0], shortenedUrls: second.rows};
         res.send(result);        
     } catch(err) {
         res.status(500).send(err.message);
