@@ -10,7 +10,7 @@ export function getUserFirstDB(id){
     SELECT
         u.id,
         u.name,	
-        COALESCE(SUM(uc."visitCount"),0) AS "visitCount"         
+        COALESCE(SUM(uc."visitCount"),0)::INTEGER AS "visitCount"         
     FROM users u
     JOIN session s ON u.id = s."userId"
     JOIN url ur ON u.id = ur."userId" 
@@ -19,6 +19,21 @@ export function getUserFirstDB(id){
     WHERE u.id = $1
     GROUP BY u.id;
     `, [id.rows[0].userId]);
+
+    return result;
+}
+
+export function getUserFirst2DB(id){
+    const result = db.query(`
+    SELECT
+        u.id,
+        u.name
+    FROM users u
+    JOIN session s ON u.id = s."userId"
+    WHERE u.id = $1
+    GROUP BY u.id;
+    `, [id.rows[0].userId]);
+    
     return result;
 }
 
@@ -28,7 +43,7 @@ export function getUserSecondDB(id){
         us.id, 
         us."urlShorten", 
         ur.url, 
-        COALESCE(SUM(uc."visitCount"),0) AS "visitCount"   
+        COALESCE(SUM(uc."visitCount"),0)::INTEGER AS "visitCount"   
     FROM users u
     JOIN session s ON u.id = s."userId"
     JOIN url ur ON u.id = ur."userId" 
