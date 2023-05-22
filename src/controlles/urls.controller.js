@@ -41,10 +41,9 @@ export async function getShortUrlId(req, res){
 
 export async function getShortUrl(req, res){
     const { shortUrl } = req.params;
+    console.log(shortUrl)
     try {
         const longUrl = await getShortUrlLongDB(shortUrl);
-
-        console.log(longUrl.rows[0].url)
 
         const urlShortExist = await getShortUrlShortDB(shortUrl);
         if (urlShortExist.rowCount === 0) return res.status(404).send("Este endereço não existe!")
