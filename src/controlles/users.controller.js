@@ -1,4 +1,4 @@
-import { getUserFirst2DB, getUserFirstDB, getUserIdDB, getUserSecondDB } from "../repositories/users.repository.js";
+import { getUserFirst2DB, getUserFirst3DB, getUserFirstDB, getUserIdDB, getUserSecondDB } from "../repositories/users.repository.js";
 
 
 export async function getUser(req, res){
@@ -10,15 +10,19 @@ export async function getUser(req, res){
         
         let first = await getUserFirstDB(id);
         
-        let first3 = {};
-        if (first.rows.length === 0) {
+        let firstWithNotVisit = {};
+        if (first.rowCount === 0) {
             const first2 = await getUserFirst2DB(id);
-            first3 = {...first2.rows[0], "visitCount": 0};
+            firstWithNotVisit = {...first2.rows[0], "visitCount": 0};
         }
+
+        const first3 = await getUserFirst3DB(id);
+        console.log(first3.rowCount)
+        if (first3.rowCount === 0) first3.rows[0] = {id: 0}
 
         const second = await getUserSecondDB(id);
         
-        const result = first.rowCount === 0 ?{...first3, shortenedUrls: [{id: null}]} : {...first.rows[0], shortenedUrls: second.rows};
+        const result = first.rowCount === 0 ?{...firstWithNotVisit, shortenedUrls: [first3.rows[0]]} : {...first.rows[0], shortenedUrls: second.rows};
         res.send(result);        
     } catch(err) {
         res.status(500).send(err.message);
